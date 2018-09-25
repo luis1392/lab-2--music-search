@@ -1,30 +1,64 @@
 import React, { Component } from "react";
 
-const artists = [
-  {
-    id: "83d91898-7763-47d7-b03b-b92132375c47",
-    name: "Pink Floyd",
-    imageUrl:
-      "https://lastfm-img2.akamaized.net/i/u/300x300/98d2ca11cd6642519d750f4b82fbec2c.png"
-  },
-  {
-    id: "8bfac288-ccc5-448d-9573-c33ea2aa5c30",
-    name: "Red Hot Chili Peppers",
-    imageUrl:
-      "https://lastfm-img2.akamaized.net/i/u/300x300/ff9c5cb557a7489f8ef032b993638d18.png"
-  }
-];
+import SearchBar from "../../components/SearchBar";
+import { Link } from "react-router-dom";
 
 export default class Home extends Component {
+  state = {
+    loading: true,
+    error: null,
+    artists: null
+  };
+  handleSearch = async artists => {
+    try {
+      let response = await fetch(
+        `https://react-api-lab.herokuapp.com/search?query=${artists}`
+      );
+      const data = await response.json();
+      await this.setState({
+        loading: false,
+        artists: data.data
+      });
+    } catch (error) {
+      this.setState({
+        error: `No hay resultados ${error}`
+      });
+    }
+  };
   render() {
+    const { artists, loading, error } = this.state;
+
     return (
-      <ul>
-        {artists.map(artist => (
-          <li key={artist.key}>
-            <a href={`/artists/${artist.id}`}>{artist.name}</a>
-          </li>
-        ))}
-      </ul>
+      <React.Fragment>
+        <SearchBar onSearch={this.handleSearch} />
+        {!artists && "not Results"}
+        {!loading &&
+          artists && (
+            <ul>
+              {artists.map(artist => (
+                <li key={artist.name}>
+                  <Link to={`/artists/${artist.id}`}>
+                    <div className="mb-4">
+                      <div className="row mb-4">
+                        <div className="col-4">
+                          <img
+                            className="img-fluid "
+                            src={artist.imageUrl}
+                            alt={artist.name}
+                          />
+                        </div>
+                        <div className="col-8">
+                          <h2>{artist.name}</h2>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        {error && <p>{error.message}</p>}
+      </React.Fragment>
     );
   }
 }

@@ -171,3 +171,16 @@ h5 {
 .img-fluid {
   width: 100%;
 }
+li {
+  list-style-type: none;
+}
+.SearchBar__input,
+.SearchBar__submit-button {
+  padding: 0.5rem;
+  font-size: 1.5rem;
+  width: 100%;
+}
+.SearchBar__submit-button {
+  border-radius: 2px;
+  min-height: 100%;
+}
